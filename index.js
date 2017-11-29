@@ -27,13 +27,13 @@ function connect(providerUrl) {
 	web3 = new Web3(new Web3.providers.HttpProvider(providerUrl));
 
 	return getNetwork()
-		.then(function(networkId) {
+		.then(function (networkId) {
 			connectionStatus.network = networkId;
 			connectionStatus.connected = true;
 
 			return getAccounts();
 		})
-		.then(function(accountList) {
+		.then(function (accountList) {
 			connectionStatus.accounts = accountList;
 			return accountList;
 		});
@@ -43,13 +43,13 @@ function useConnection(web3Instance) {
 	web3 = new Web3(web3Instance.currentProvider);
 
 	return getNetwork()
-		.then(function(networkId) {
+		.then(function (networkId) {
 			connectionStatus.network = networkId;
 			connectionStatus.connected = true;
 
 			return getAccounts();
 		})
-		.then(function(accountList) {
+		.then(function (accountList) {
 			connectionStatus.accounts = accountList;
 			return accountList;
 		});
@@ -77,7 +77,7 @@ function addConnectionChangedListener(func) {
 }
 
 function checkConnectionChanged() {
-	Promise.all(getAccounts(), getNetwork()).then(function() {
+	Promise.all(getAccounts(), getNetwork()).then(function () {
 		var newConnectionStatus = {
 			connected: connectionStatus.connected,
 			network: connectionStatus.network,
@@ -95,50 +95,66 @@ function checkConnectionChanged() {
 		}
 
 		lastConnectionStatus = newConnectionStatus;
-	}).catch(function(err){console.error(err)});
+	}).catch(function (err) { console.error(err) });
 }
 
 function notifyChangeListeners(newState) {
-	connectionChangeCallbacks.forEach(function(func) {func(newState)});
+	connectionChangeCallbacks.forEach(function (func) { func(newState) });
 }
 
 // UTIL
 
 function delay(secs) {
-  return rpcSend("evm_mine")
-    .then(function() {rpcSend("evm_increaseTime", [secs])})
-    .then(function() {rpcSend("evm_mine")});
+	return rpcSend("evm_mine")
+		.then(function () { rpcSend("evm_increaseTime", [secs]) })
+		.then(function () { rpcSend("evm_mine") });
 }
 
 // Call a low level RPC
 
 function rpcSend(method, params) {
 	params = params || [];
-  if (!connectionStatus.connected) {
-    return Promise.reject(
-      new Error(
-        "You need to initialize eth-tx before you can send RPC transactions"
-      )
-    );
-  } else if (!method) {
-    return Promise.reject(new Error("You need to indicate a method"));
-  }
+	if (!connectionStatus.connected) {
+		return Promise.reject(
+			new Error(
+				"You need to initialize eth-tx before you can send RPC transactions"
+			)
+		);
+	} else if (!method) {
+		return Promise.reject(new Error("You need to indicate a method"));
+	}
 
-  return new Promise(function(resolve, reject) {
-    web3.currentProvider.sendAsync(
-      {
-        jsonrpc: "2.0",
-        method: method,
-        params: params,
-        id: new Date().getTime()
-      },
-      function(err) {
-        if (err) reject(err);
-        else resolve();
-      }
-    );
-  });
+	return new Promise(function (resolve, reject) {
+		web3.currentProvider.sendAsync(
+			{
+				jsonrpc: "2.0",
+				method: method,
+				params: params,
+				id: new Date().getTime()
+			},
+			function (err) {
+				if (err) reject(err);
+				else resolve();
+			}
+		);
+	});
 }
+
+function deployContract(abi, byteCode, opts) {
+	// TODO
+
+	// check connected
+	// Contract.deploy({data: HashStore.byteCode, arguments: ["0x1234"]}).send({from: "0xE18D8EB2b5d0d141908A7eBF672DC77D8681902b"})
+
+}
+
+function wrapContract(abi, byteCode, opts) {
+	// window.HashStore = HashStore;
+	// Contract = new w3.eth.Contract(HashStore.abi, "0x8af4943ED2744c229976D94045854dc5e374479a")
+
+}
+
+function sendTransaction(opts) { }
 
 
 // Convenience wrappers
@@ -148,14 +164,14 @@ function getBalance(address) {
 }
 
 function getNetwork() {
-	return web3.eth.net.getNetworkType().then(function(networkId) {
+	return web3.eth.net.getNetworkType().then(function (networkId) {
 		connectionStatus.network = networkId;
 		return connectionStatus.network;
 	});
 }
 
 function getAccounts() {
-	return web3.eth.getAccounts().then(function(acct) {
+	return web3.eth.getAccounts().then(function (acct) {
 		connectionStatus.accounts = acct; // update the current list
 		return connectionStatus.accounts;
 	});
@@ -171,19 +187,12 @@ function getBlock(blockNumber) {
 
 function estimateTransactionGas(txOpts) {
 	txOpts = txOpts || {};
-	return web3.eth.estimateGas(txOpts).then(function(estimatedGas) {
+	return web3.eth.estimateGas(txOpts).then(function (estimatedGas) {
 		if (estimatedGas >= gasLimit)
 			throw new Error("The transaction requires more gas than it is allowed");
 		else return estimatedGas;
 	});
 }
-
-// window.w3 = new Web3(web3.currentProvider);
-// window.HashStore = HashStore;
-// window.w3 = new Web3("http://localhost:8545");
-// Contract = new w3.eth.Contract(HashStore.abi, "0x8af4943ED2744c229976D94045854dc5e374479a")
-// Contract.deploy({data: HashStore.byteCode, arguments: ["0x1234"]}).send({from: "0xE18D8EB2b5d0d141908A7eBF672DC77D8681902b"})
-
 
 module.exports = {
 	connect: connect,
