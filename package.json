@@ -1,0 +1,29 @@
+{
+  "name": "web3-wrap",
+  "version": "0.9.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ledfusion/web3-wrap.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ledfusion/web3-wrap/issues"
+  },
+  "homepage": "https://github.com/ledfusion/web3-wrap#readme",
+  "dependencies": {
+    "bluebird": "^3.5.1",
+    "eth-contract-class": "0.0.6",
+    "web3": "^1.0.0-beta.26"
+  },
+  "devDependencies": {
+    "babel-eslint": "^8.0.2",
+    "eslint": "^4.12.0"
+  }
+}
