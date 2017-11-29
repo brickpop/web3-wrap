@@ -1,5 +1,6 @@
 var Promise = require("bluebird");
 var Web3 = require("web3");
+var EthContractClass = require("eth-contract-class").default;
 var web3 = new Web3();
 
 var connectionStatus = {
@@ -17,8 +18,8 @@ var lastConnectionStatus = {
 };
 
 var INTERVAL_PERIOD = 1000;
-var gasLimit = 4700000;
-var gasPrice = web3.utils.toWei("0.00000006");
+// var gasLimit = 4700000;
+// var gasPrice = web3.utils.toWei("0.00000006");
 
 // FUNCTIONS
 
@@ -116,9 +117,7 @@ function rpcSend(method, params) {
 	params = params || [];
 	if (!connectionStatus.connected) {
 		return Promise.reject(
-			new Error(
-				"You need to initialize eth-tx before you can send RPC transactions"
-			)
+			new Error("You are using an unsupported browser or your connection is down")
 		);
 	} else if (!method) {
 		return Promise.reject(new Error("You need to indicate a method"));
@@ -140,18 +139,23 @@ function rpcSend(method, params) {
 	});
 }
 
-function deployContract(abi, byteCode, opts) {
-	// TODO
+function deployContract(abi, byteCode, parameters, opts) {
+  // check connected
+  if(!isConnected()) return Promise.reject(new Error("You are using an unsupported browser or your connection is down"));
 
-	// check connected
 	// Contract.deploy({data: HashStore.byteCode, arguments: ["0x1234"]}).send({from: "0xE18D8EB2b5d0d141908A7eBF672DC77D8681902b"})
-
+  const contractClass = EthContractClass(abi, byteCode);
+  return contractClass.new.apply(null, [web3].concat(parameters).concat([opts]));
 }
 
-function wrapContract(abi, byteCode, opts) {
-	// window.HashStore = HashStore;
-	// Contract = new w3.eth.Contract(HashStore.abi, "0x8af4943ED2744c229976D94045854dc5e374479a")
+function wrapContract(abi, byteCode) {
+  return EthContractClass(abi, byteCode);
+}
 
+function attachToContract(abi, byteCode, address, opts){
+  const contractClass = EthContractClass(abi, byteCode);
+
+  return new contractClass(web3, address);
 }
 
 function sendTransaction(opts) { }
@@ -187,11 +191,7 @@ function getBlock(blockNumber) {
 
 function estimateTransactionGas(txOpts) {
 	txOpts = txOpts || {};
-	return web3.eth.estimateGas(txOpts).then(function (estimatedGas) {
-		if (estimatedGas >= gasLimit)
-			throw new Error("The transaction requires more gas than it is allowed");
-		else return estimatedGas;
-	});
+	return web3.eth.estimateGas(txOpts);
 }
 
 module.exports = {
@@ -203,7 +203,11 @@ module.exports = {
 	addConnectionChangedListener: addConnectionChangedListener,
 
 	delay: delay,
-	rpcSend: rpcSend,
+  rpcSend: rpcSend,
+
+  wrapContract: wrapContract,
+  attachToContract: attachToContract,
+  deployContract: deployContract,
 
 	getAccounts: getAccounts,
 	getBalance: getBalance,
