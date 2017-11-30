@@ -140,7 +140,6 @@ function rpcSend(method, params) {
 }
 
 function deployContract(abi, byteCode, parameters, opts) {
-  // check connected
   if(!isConnected()) return Promise.reject(new Error("You are using an unsupported browser or your connection is down"));
 
 	// Contract.deploy({data: HashStore.byteCode, arguments: ["0x1234"]}).send({from: "0xE18D8EB2b5d0d141908A7eBF672DC77D8681902b"})
@@ -158,7 +157,16 @@ function attachToContract(abi, byteCode, address, opts){
   return new contractClass(web3, address);
 }
 
-function sendTransaction(opts) { }
+function sendTransaction(opts) {
+  if(!isConnected()) return Promise.reject(new Error("You are using an unsupported browser or your connection is down"));
+  else if(!opts.from) opts.from = connectionStatus.accounts && connectionStatus.accounts[0];
+
+  return estimateTransactionGas(opts).then(estimatedGas => {
+    opts.gas = estimatedGas + 10000;
+
+    return web3.eth.sendTransaction(opts);
+  })
+}
 
 
 // Convenience wrappers
@@ -204,6 +212,7 @@ module.exports = {
 
 	delay: delay,
   rpcSend: rpcSend,
+  sendTransaction: sendTransaction,
 
   wrapContract: wrapContract,
   attachToContract: attachToContract,
