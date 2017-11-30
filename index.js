@@ -18,8 +18,6 @@ var lastConnectionStatus = {
 };
 
 var INTERVAL_PERIOD = 1000;
-// var gasLimit = 4700000;
-// var gasPrice = web3.utils.toWei("0.00000006");
 
 // FUNCTIONS
 
@@ -139,22 +137,21 @@ function rpcSend(method, params) {
 	});
 }
 
-function deployContract(abi, byteCode, parameters, opts) {
-  if(!isConnected()) return Promise.reject(new Error("You are using an unsupported browser or your connection is down"));
-
-	// Contract.deploy({data: HashStore.byteCode, arguments: ["0x1234"]}).send({from: "0xE18D8EB2b5d0d141908A7eBF672DC77D8681902b"})
-  const contractClass = EthContractClass(abi, byteCode);
-  return contractClass.new.apply(null, [web3].concat(parameters).concat([opts]));
-}
-
 function wrapContract(abi, byteCode) {
-  return EthContractClass(abi, byteCode);
-}
-
-function attachToContract(abi, byteCode, address, opts){
   const contractClass = EthContractClass(abi, byteCode);
 
-  return new contractClass(web3, address);
+  contractClass.deploy = function(parameters){
+    if(!isConnected()) return Promise.reject(new Error("You are using an unsupported browser or your connection is down"));
+
+    return contractClass.new.apply(null, [web3].concat(parameters));
+  };
+
+  contractClass.attach = function(address){
+    if(!isConnected()) return Promise.reject(new Error("You are using an unsupported browser or your connection is down"));
+
+    return new contractClass(web3, address);
+  };
+  return contractClass;
 }
 
 function sendTransaction(opts) {
@@ -169,7 +166,7 @@ function sendTransaction(opts) {
 }
 
 
-// Convenience wrappers
+// Convenience web3 wrappers
 
 function getBalance(address) {
 	return web3.eth.getBalance(address);
@@ -208,15 +205,13 @@ module.exports = {
 	getCurrentWeb3: getCurrentWeb3,
 	isConnected: isConnected,
 
-	addConnectionChangedListener: addConnectionChangedListener,
+	onConnectionChanged: addConnectionChangedListener,
 
 	delay: delay,
   rpcSend: rpcSend,
   sendTransaction: sendTransaction,
 
   wrapContract: wrapContract,
-  attachToContract: attachToContract,
-  deployContract: deployContract,
 
 	getAccounts: getAccounts,
 	getBalance: getBalance,

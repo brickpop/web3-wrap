@@ -3,7 +3,7 @@ const { HashStore } = require("./example-contracts.js");
 
 var hashStoreInstance = null;
 
-// const HashStoreContract = Web3Wrap.wrapContract(HashStore.abi, HashStore.byteCode);
+const HashStoreContract = Web3Wrap.wrapContract(HashStore.abi, HashStore.byteCode);
 
 function connect() {
   if (typeof window.web3 !== "undefined") {
@@ -52,7 +52,7 @@ function deploy() {
       const initialHash = "0x1234";
       setStatus("Deploying HashStore");
 
-      return Web3Wrap.deployContract(HashStore.abi, HashStore.byteCode, [initialHash], {});
+      return HashStoreContract.deploy(initialHash, {});
     })
     .then(instance => {
       hashStoreInstance = instance;
@@ -72,12 +72,15 @@ function attachToContract() {
   if (!hashStoreInstance) {
     const address = "0x03f3fE224F6c4eB3437b273fB682326034A69EfD"; // change it by yours once deployed
     // const address = "0xBF83424D053d4E97dcA78611f44E3939a7697953";
-    hashStoreInstance = Web3Wrap.attachToContract(HashStore.abi, HashStore.byteCode, address);
+    // const address = "0xcBeDf81116eC295D3752d69b58FEAFD340D90641";
+
+    hashStoreInstance = HashStoreContract.attach(address);
   }
 }
 
 function updateHashStatus() {
   attachToContract();
+  if(!hashStoreInstance) return;
 
   return hashStoreInstance
     .getHash()
@@ -89,7 +92,7 @@ function updateHashStatus() {
     });
 }
 
-Web3Wrap.addConnectionChangedListener(status => {
+Web3Wrap.onConnectionChanged(status => {
   if (!status.connected)
     setStatus("You are using an unsupported browser or your connection is down");
   else if (status.accounts && status.accounts.length)
@@ -99,6 +102,7 @@ Web3Wrap.addConnectionChangedListener(status => {
 
 function setHash(hash) {
   attachToContract();
+  if(!hashStoreInstance) return alert("You need to attach to the Smart Contract");
 
   return Web3Wrap
     .getNetwork()
@@ -121,6 +125,8 @@ function setHash(hash) {
 }
 
 function clearHash() {
+  if(!hashStoreInstance) return alert("You need to attach to the Smart Contract");
+
   return Web3Wrap
     .getNetwork()
     .then(name => {
