@@ -158,7 +158,7 @@ function sendTransaction(opts) {
   if(!isConnected()) return Promise.reject(new Error("You are using an unsupported browser or your connection is down"));
   else if(!opts.from) opts.from = connectionStatus.accounts && connectionStatus.accounts[0];
 
-  return estimateTransactionGas(opts).then(estimatedGas => {
+  return estimateTransactionGas(opts).then(function(estimatedGas){
     opts.gas = estimatedGas + 10000;
 
     return web3.eth.sendTransaction(opts);
