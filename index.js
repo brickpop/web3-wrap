@@ -23,7 +23,8 @@ var INTERVAL_PERIOD = 1000;
 
 function connect(providerUrl) {
 	providerUrl = providerUrl || "http://localhost:8545";
-	web3 = new Web3(new Web3.providers.HttpProvider(providerUrl));
+	// web3 = new Web3(new Web3.providers.HttpProvider(providerUrl));
+	web3.setProvider(new Web3.providers.HttpProvider(providerUrl));
 
 	return getNetwork()
 		.then(function (networkId) {
@@ -39,7 +40,8 @@ function connect(providerUrl) {
 }
 
 function useConnection(web3Instance) {
-	web3 = new Web3(web3Instance.currentProvider);
+	// web3 = new Web3(web3Instance.currentProvider);
+  web3.setProvider(web3Instance.currentProvider);
 
 	return getNetwork()
 		.then(function (networkId) {
@@ -140,7 +142,12 @@ function rpcSend(method, params) {
 function wrapContract(abi, byteCode) {
   const contractClass = EthContractClass(abi, byteCode);
 
-  contractClass.deploy = function(parameters){
+  contractClass.deploy = function(){
+    var len = arguments.length;
+    var parameters = Array(len);
+    for (var k = 0; k < len; k++) {
+      parameters[k] = arguments[k];
+    }
     if(!isConnected()) return Promise.reject(new Error("You are using an unsupported browser or your connection is down"));
 
     return contractClass.new.apply(null, [web3].concat(parameters));
