@@ -23,7 +23,13 @@ var INTERVAL_PERIOD = 1000;
 
 function connect(providerUrl) {
   providerUrl = providerUrl || "http://localhost:8545";
-  web3.setProvider(new Web3.providers.HttpProvider(providerUrl));
+
+  if(providerUrl.match(/^http:/i))
+    web3 = new Web3(new Web3.providers.HttpProvider(providerUrl));
+  else if(providerUrl.match(/^ws:/i))
+    web3 = new Web3(new Web3.providers.WebsocketProvider(providerUrl));
+  else
+    web3 = new Web3(new Web3.providers.IpcProvider(providerUrl));
 
   return getNetwork()
     .then(function (networkId) {
