@@ -3,9 +3,10 @@ Web3 Wrap
 
 Web3 Wrap is a client Javascript library inspired on the work of Jordi Baylina ([runWeb3Wrap](https://github.com/jbaylina/runWeb3Wrap) and [ethconnector](https://github.com/jbaylina/ethconnector)).
 
-* It provides a unified way to **deploy**, **query** and **send transactions** to Ethereum Smart Contracts with ease.
-* It also allows to perform simple operations in a simple way
-* It abstracts the usage of the web3 component. You don't need to worry about the `window.web3` version
+* It allows to interact with Web3, regardless of the underlying version or the browser support
+* It provides a unified way to **deploy**, **call** and **send transactions** to Ethereum Smart Contracts
+* It also allows to perform simple transactions in a simple way
+* It abstracts the usage of the web3 component. Simply require the component and forget about the `window.web3` version
 
 # Environment
 
