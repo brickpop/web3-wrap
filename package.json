@@ -1,6 +1,6 @@
 {
   "name": "web3-wrap",
-  "version": "0.9.6",
+  "version": "0.10.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -10,21 +10,28 @@
     "type": "git",
     "url": "git+https://github.com/ledfusion/web3-wrap.git"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "web3",
+    "ethereum",
+    "javascript",
+    "wrapper",
+    "solidity",
+    "solc",
+    "eth"
+  ],
+  "author": "Jordi Moraleda",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/ledfusion/web3-wrap/issues"
   },
   "homepage": "https://github.com/ledfusion/web3-wrap#readme",
   "dependencies": {
-    "bluebird": "^3.5.1",
-    "eth-contract-class": "0.0.6",
-    "web3": "^1.0.0-beta.26"
+    "bluebird": "^3.5.2",
+    "eth-contract-class": "0.0.12",
+    "web3": "^1.0.0-beta.36"
   },
   "devDependencies": {
     "babel-eslint": "^8.0.2",
-    "eslint": "^4.12.0",
-    "webpack": "^3.8.1"
+    "eslint": "^4.12.0"
   }
 }

@@ -1,0 +1,20 @@
+{
+  "name": "web3-wrap-example",
+  "version": "0.10.0",
+  "description": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jordi Moraleda",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ledfusion/web3-wrap/issues"
+  },
+  "homepage": "https://github.com/ledfusion/web3-wrap#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "serve": "^10.0.2",
+    "webpack": "^4.20.2",
+    "webpack-cli": "^3.1.2"
+  }
+}

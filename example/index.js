@@ -1,5 +1,5 @@
 const Web3Wrap = require("../index"); // This would be require("eth-tx")
-const { HashStore } = require("./example-contracts.js");
+const { HashStore } = require("./contracts.js");
 
 var hashStoreInstance = null;
 

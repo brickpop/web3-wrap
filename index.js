@@ -166,7 +166,7 @@ function sendTransaction(opts) {
   else if (!opts.from) opts.from = connectionStatus.accounts && connectionStatus.accounts[0];
 
   return estimateTransactionGas(opts).then(function (estimatedGas) {
-    opts.gas = estimatedGas + 10000;
+    opts.gas = estimatedGas * 1.07;
 
     return web3.eth.sendTransaction(opts);
   })
